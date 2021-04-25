@@ -1,0 +1,240 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "This is simple API to interacting with the Notice-Board server",
+        "title": "Notice-Board API",
+        "contact": {},
+        "version": "v0.0.1"
+    },
+    "host": "http://localhost:3000",
+    "paths": {
+        "/v1/notices": {
+            "post": {
+                "description": "Method to create new notice",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "description": "Create Notice",
+                        "name": "CreateNoticeRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Notice"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/models.GetNoticeByIDRequestDto"
+                        }
+                    },
+                    "208": {
+                        "description": "Already exists",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Server internal error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/notices/": {
+            "get": {
+                "description": "get all notices",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "enum": [
+                            "\"created_at\"",
+                            "\"price\""
+                        ],
+                        "type": "string",
+                        "description": "Sort by field created_at or price",
+                        "name": "sort_field",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by ascending or descending",
+                        "name": "sort_type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Notice"
+                            }
+                        }
+                    },
+                    "208": {
+                        "description": "Already exists",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Server internal error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/notices/{id}": {
+            "get": {
+                "description": "Method for getting a specific notice by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Notice ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Get notice with all images",
+                        "name": "fields",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/models.GetNoticeByIDRequestDto"
+                        }
+                    },
+                    "208": {
+                        "description": "Already exists",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Server internal error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "message": {
+                    "type": "string",
+                    "example": "error message"
+                }
+            }
+        },
+        "models.GetNoticeByIDRequestDto": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "5dcca8d2-a5d6-11eb-bcbc-0242ac130002"
+                }
+            }
+        },
+        "models.Notice": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-04-24T16:34:19.61868Z"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Please help to find missing cat Salem"
+                },
+                "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "5dcca8d2-a5d6-11eb-bcbc-0242ac130002"
+                },
+                "image": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "salem_image.jpeg"
+                    ]
+                },
+                "price": {
+                    "type": "number",
+                    "format": "number",
+                    "example": 10000
+                },
+                "title": {
+                    "type": "string",
+                    "example": "If you find a cat, let me know!"
+                }
+            }
+        }
+    }
+}

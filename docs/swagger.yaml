@@ -1,0 +1,160 @@
+definitions:
+  models.ErrorResponse:
+    properties:
+      error:
+        example: true
+        type: boolean
+      message:
+        example: error message
+        type: string
+    type: object
+  models.GetNoticeByIDRequestDto:
+    properties:
+      id:
+        example: 5dcca8d2-a5d6-11eb-bcbc-0242ac130002
+        format: uuid
+        type: string
+    type: object
+  models.Notice:
+    properties:
+      created_at:
+        example: "2021-04-24T16:34:19.61868Z"
+        type: string
+      description:
+        example: Please help to find missing cat Salem
+        type: string
+      id:
+        example: 5dcca8d2-a5d6-11eb-bcbc-0242ac130002
+        format: uuid
+        type: string
+      image:
+        example:
+        - salem_image.jpeg
+        items:
+          type: string
+        type: array
+      price:
+        example: 10000
+        format: number
+        type: number
+      title:
+        example: If you find a cat, let me know!
+        type: string
+    type: object
+host: http://localhost:3000
+info:
+  contact: {}
+  description: This is simple API to interacting with the Notice-Board server
+  title: Notice-Board API
+  version: v0.0.1
+paths:
+  /v1/notices:
+    post:
+      consumes:
+      - application/json
+      description: Method to create new notice
+      parameters:
+      - description: Create Notice
+        in: body
+        name: CreateNoticeRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.Notice'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.GetNoticeByIDRequestDto'
+        "208":
+          description: Already exists
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Server internal error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+  /v1/notices/:
+    get:
+      consumes:
+      - application/json
+      description: get all notices
+      parameters:
+      - description: Sort by field created_at or price
+        enum:
+        - '"created_at"'
+        - '"price"'
+        in: query
+        name: sort_field
+        type: string
+      - description: Sort by ascending or descending
+        in: query
+        name: sort_type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            items:
+              $ref: '#/definitions/models.Notice'
+            type: array
+        "208":
+          description: Already exists
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Server internal error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+  /v1/notices/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Method for getting a specific notice by id
+      parameters:
+      - description: Notice ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Get notice with all images
+        in: query
+        name: fields
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/models.GetNoticeByIDRequestDto'
+        "208":
+          description: Already exists
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Server internal error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+schemes:
+- http
+swagger: "2.0"
