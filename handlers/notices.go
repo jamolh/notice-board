@@ -18,7 +18,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param CreateNoticeRequest body models.Notice true "Create Notice"
-// @Success 200 {string} models.Response{payload=id} "Success"
+// @Success 200 {object} models.Notice "Success"
 // @Failure 208 {object} models.ErrorResponse "Already exists"
 // @Failure 400 {object} models.ErrorResponse "Bad request"
 // @Failure 404 {object} models.ErrorResponse "Not found"
@@ -67,7 +67,7 @@ func CreateNoticeHandler(w http.ResponseWriter, r *http.Request, p httprouter.Pa
 		return
 	}
 
-	response.Payload = request.ID
+	response.Payload = request
 }
 
 // @Summary Method for getting notice by ID

@@ -49,7 +49,7 @@ var doc = `{
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Notice"
                         }
                     },
                     "208": {
