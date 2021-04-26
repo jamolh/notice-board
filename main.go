@@ -11,16 +11,17 @@ import (
 
 	"github.com/jamolh/notice-board/db"
 	_ "github.com/jamolh/notice-board/docs"
-	"github.com/jamolh/notice-board/handlers"
+	"github.com/jamolh/notice-board/helpers"
+	"github.com/jamolh/notice-board/routers"
 
-	"github.com/julienschmidt/httprouter"
 	"github.com/swaggo/http-swagger"
 
 	_ "github.com/joho/godotenv/autoload"
 )
 
-var (
-	router = httprouter.New()
+const (
+	serverAddr  = "SERVER_ADDR"
+	databaseURL = "DATABASE_URL"
 )
 
 // @title Notice-Board API
@@ -30,15 +31,8 @@ var (
 // @licence.name Custom
 // @schemes http
 func main() {
-	port, found := os.LookupEnv("SERVER_ADDR")
-	if !found {
-		log.Fatal("apiservice:main SERVER_ADDR not found")
-	}
-
-	dbConnection, exists := os.LookupEnv("DATABASE_URL")
-	if !exists {
-		log.Fatal("db:Connect DATABASE_URL not found")
-	}
+	port := helpers.GetEnv(serverAddr, true)
+	dbConnection := helpers.GetEnv(databaseURL, true)
 
 	err := db.Connect(dbConnection)
 	if err != nil {
@@ -46,24 +40,14 @@ func main() {
 	}
 	defer db.Close()
 
-	initRoutes()
 	srv := &http.Server{
 		Addr:         port, //port,
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,
-		Handler:      router,
+		Handler:      routers.InitRoutes(),
 	}
-	go func() {
-		stopSignal := make(chan os.Signal)
-		signal.Notify(stopSignal, os.Interrupt, os.Kill)
-		s := <-stopSignal
-		log.Println("server received signal", s)
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-		if err := srv.Shutdown(ctx); err != nil {
-			log.Println("server: couldn't shutdown because of ", err)
-		}
-	}()
+
+	go gracefulShutdown(srv)
 
 	log.Println("http server is running on port", port)
 	err = srv.ListenAndServe()
@@ -75,11 +59,14 @@ func main() {
 	log.Println("server closed")
 }
 
-// declaring our routes
-func initRoutes() {
-	router.HandlerFunc("GET", "/swagger/*any", httpSwagger.WrapHandler)
-
-	router.POST("/v1/notices", handlers.CreateNoticeHandler)
-	router.GET("/v1/notices/:id", handlers.GetNoticeHandler)
-	router.GET("/v1/notices", handlers.GetNoticesHandler)
+func gracefulShutdown(srv *http.Server) {
+	stopSignal := make(chan os.Signal)
+	signal.Notify(stopSignal, os.Interrupt, os.Kill)
+	s := <-stopSignal
+	log.Println("server received signal", s)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Println("server: couldn't shutdown because of ", err)
+	}
 }
