@@ -10,13 +10,8 @@ import (
 	"time"
 
 	"github.com/jamolh/notice-board/db"
-	_ "github.com/jamolh/notice-board/docs"
 	"github.com/jamolh/notice-board/helpers"
-	"github.com/jamolh/notice-board/routers"
-
-	"github.com/swaggo/http-swagger"
-
-	_ "github.com/joho/godotenv/autoload"
+	"github.com/jamolh/notice-board/routes"
 )
 
 const (
@@ -44,7 +39,7 @@ func main() {
 		Addr:         port, //port,
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,
-		Handler:      routers.InitRoutes(),
+		Handler:      routes.InitRoutes(),
 	}
 
 	go gracefulShutdown(srv)

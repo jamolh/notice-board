@@ -1,4 +1,4 @@
-package routers
+package routes
 
 import (
 	_ "github.com/jamolh/notice-board/docs"
@@ -9,9 +9,10 @@ import (
 )
 
 func InitRoutes() *httprouter.Router {
+	// declaring our routes
 	var router = httprouter.New()
 
-	// declaring our routes
+	// swagger doc api
 	router.HandlerFunc("GET", "/swagger/*any", httpSwagger.WrapHandler)
 
 	router.POST("/v1/notices", handlers.CreateNoticeHandler)

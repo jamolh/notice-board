@@ -9,6 +9,8 @@ import (
 	"unicode"
 
 	"github.com/google/uuid"
+
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func init() {
