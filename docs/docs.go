@@ -90,8 +90,8 @@ var doc = `{
                 "parameters": [
                     {
                         "enum": [
-                            "\"created_at\"",
-                            "\"price\""
+                            "created_at",
+                            "price"
                         ],
                         "type": "string",
                         "description": "Sort by field created_at or price",
@@ -99,6 +99,10 @@ var doc = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
                         "type": "string",
                         "description": "Sort by ascending or descending",
                         "name": "sort_type",

@@ -3,10 +3,10 @@ package db
 import (
 	"context"
 	"log"
-	"os"
 
 	"gopkg.in/natefinch/lumberjack.v2"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -28,30 +28,37 @@ func init() {
 }
 
 // Connect to database
-func Connect() {
-	var (
-		err error
-	)
-
-	dbConnection, exists := os.LookupEnv("DATABASE_URL")
-	if !exists {
-		log.Fatal("db:Connect DATABASE_URL not found")
-	}
-
+func Connect(dbConnection string) (err error) {
 	pool, err = pgxpool.Connect(context.Background(), dbConnection)
 	if err != nil {
-		log.Fatal("Connecting database failed:", err)
+		log.Println("Connecting database failed:", err)
 	}
+	log.Println("ooooo")
+	return
+}
 
-	log.Println("------------DATABASE IS CONNECTED------------")
+func Up() (err error) {
 	_, err = pool.Exec(context.Background(), createTableNoticesQuery)
 	if err != nil {
-		log.Fatal("Executing createTableNotices failed:", err)
+		log.Println("Executing createTableNotices failed:", err)
 	}
+	return
+}
+
+func Drop() (err error) {
+	_, err = pool.Exec(context.Background(), dropTableNoticesQuery)
+	if err != nil {
+		log.Println("Executing dropTableNotices failed:", err)
+	}
+	return
 }
 
 // Close connection before exit
 func Close() {
 	log.Println("db:Close closing db connection")
 	pool.Close()
+}
+
+func IsNotFound(err error) bool {
+	return pgx.ErrNoRows == err
 }

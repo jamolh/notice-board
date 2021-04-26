@@ -38,7 +38,7 @@ func CreateNotice(ctx context.Context, model *models.Notice) error {
 // GetNoticeByID - get notice by id
 // getAllImages=true - get path all of images
 // else get fisrt path from array
-func GetNoticeByID(ctx context.Context, request models.GetNoticeByIDRequestDto) (*models.Notice, error) {
+func GetNoticeByID(ctx context.Context, request *models.GetNoticeRequestDto) (*models.Notice, error) {
 	var (
 		model models.Notice
 		query string
@@ -60,10 +60,6 @@ func GetNoticeByID(ctx context.Context, request models.GetNoticeByIDRequestDto) 
 		&model.Price,
 		&model.CreatedAt,
 		&model.Image)
-
-	if err == pgx.ErrNoRows {
-		return nil, nil
-	}
 
 	if err != nil {
 		log.Println("db:GetNoticeByID failed:", err)
@@ -153,9 +149,6 @@ func validateSortFields(request models.GetNoticesRequestDto) (sql string) {
 		sql = fieldCreatedAt
 	}
 
-	// if we got sort by ascending
-	// then sort by ascending
-	// else sort by descending
 	switch request.Order {
 	case sortByAsc:
 		sql += " " + sortByAsc

@@ -9,3 +9,5 @@ const createTableNoticesQuery = `CREATE TABLE IF NOT EXISTS notices (
 	images JSONB DEFAULT '[]',
 	UNIQUE(title)
 );`
+
+const dropTableNoticesQuery = `DROP TABLE IF EXISTS notices;`

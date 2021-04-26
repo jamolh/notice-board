@@ -91,12 +91,15 @@ paths:
       parameters:
       - description: Sort by field created_at or price
         enum:
-        - '"created_at"'
-        - '"price"'
+        - created_at
+        - price
         in: query
         name: sort_field
         type: string
       - description: Sort by ascending or descending
+        enum:
+        - asc
+        - desc
         in: query
         name: sort_type
         type: string

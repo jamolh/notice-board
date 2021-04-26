@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -12,7 +13,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-// @Summery Create new notice based on parametrs
+// @Summary Create new notice based on parametrs
 // @Description Method to create new notice
 // @Accept json
 // @Produce json
@@ -37,6 +38,7 @@ func CreateNoticeHandler(w http.ResponseWriter, r *http.Request, p httprouter.Pa
 	err = json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		response.Code = http.StatusBadRequest
+		log.Println("CreateNoticeHandler parcing request failed:", err)
 		return
 	}
 
@@ -50,6 +52,7 @@ func CreateNoticeHandler(w http.ResponseWriter, r *http.Request, p httprouter.Pa
 	switch {
 	case err != nil:
 		response.Code = http.StatusInternalServerError
+		log.Println("CreateNoticeHandler, db CheckNoticeExistsByTitle error:", err)
 		return
 	case exists:
 		response.Code = http.StatusAlreadyReported
@@ -60,13 +63,14 @@ func CreateNoticeHandler(w http.ResponseWriter, r *http.Request, p httprouter.Pa
 	err = db.CreateNotice(r.Context(), &request)
 	if err != nil {
 		response.Code = http.StatusInternalServerError
+		log.Println("CreateNoticeHandler, db CreateNotice error:", err)
 		return
 	}
 
 	response.Payload = request.ID
 }
 
-// @Summery Method for getting notice by ID
+// @Summary Method for getting notice by ID
 // @Description Method for getting a specific notice by id
 // @Accept json
 // @Produce json
@@ -78,9 +82,9 @@ func CreateNoticeHandler(w http.ResponseWriter, r *http.Request, p httprouter.Pa
 // @Failure 404 {object} models.ErrorResponse "Not found"
 // @Failure 500 {object} models.ErrorResponse "Server internal error"
 // @Router /v1/notices/{id} [GET]
-func GetNoticesByIDHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func GetNoticeHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	var (
-		request = models.GetNoticeByIDRequestDto{
+		request = &models.GetNoticeRequestDto{
 			ID: p.ByName("id"),
 		}
 		response = models.Response{
@@ -101,20 +105,22 @@ func GetNoticesByIDHandler(w http.ResponseWriter, r *http.Request, p httprouter.
 	}
 
 	notice, err := db.GetNoticeByID(r.Context(), request)
-	switch {
-	case err != nil:
+	if err != nil {
+		log.Println("GetNoticeHandler, db GetNotice error:", err)
+
+		if db.IsNotFound(err) {
+			response.Code = http.StatusNotFound
+			response.Message = "Notice with this id not exists"
+			return
+		}
 		response.Code = http.StatusInternalServerError
 		return
-	case notice == nil:
-		response.Code = http.StatusNotFound
-		response.Message = "Notice with this id not exists"
-		return
-	default:
-		response.Payload = notice
 	}
+
+	response.Payload = notice
 }
 
-// @Summery Method to take all notices
+// @Summary Method to take all notices
 // @Description get all notices
 // @Accept json
 // @Produce json
@@ -137,6 +143,12 @@ func GetNoticesHandler(w http.ResponseWriter, r *http.Request, p httprouter.Para
 	request := getNoticesFilter(r)
 	notices, err := db.GetNotices(r.Context(), request)
 	if err != nil {
+		log.Println("GetNoticesHandler, db GetNotices error:", err)
+
+		if db.IsNotFound(err) {
+			response.Code = http.StatusNotFound
+			response.Message = "Notices not found"
+		}
 		response.Code = http.StatusInternalServerError
 		return
 	}

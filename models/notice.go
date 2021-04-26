@@ -16,7 +16,7 @@ type GetNoticesRequestDto struct {
 	Order string
 }
 
-type GetNoticeByIDRequestDto struct {
+type GetNoticeRequestDto struct {
 	ID           string `json:"id" example:"5dcca8d2-a5d6-11eb-bcbc-0242ac130002" format:"uuid"`
 	GetAllImages bool   `json:"-"`
 }
