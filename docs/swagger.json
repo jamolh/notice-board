@@ -20,6 +20,7 @@
                 "produces": [
                     "application/json"
                 ],
+                "summary": "Create new notice based on parametrs",
                 "parameters": [
                     {
                         "description": "Create Notice",
@@ -35,7 +36,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/models.GetNoticeByIDRequestDto"
+                            "type": "string"
                         }
                     },
                     "208": {
@@ -74,6 +75,7 @@
                 "produces": [
                     "application/json"
                 ],
+                "summary": "Method to take all notices",
                 "parameters": [
                     {
                         "enum": [
@@ -130,6 +132,7 @@
                 "produces": [
                     "application/json"
                 ],
+                "summary": "Method for getting notice by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -149,7 +152,7 @@
                     "200": {
                         "description": "Success",
                         "schema": {
-                            "$ref": "#/definitions/models.GetNoticeByIDRequestDto"
+                            "$ref": "#/definitions/models.GetNoticeRequestDto"
                         }
                     },
                     "208": {
@@ -194,7 +197,7 @@
                 }
             }
         },
-        "models.GetNoticeByIDRequestDto": {
+        "models.GetNoticeRequestDto": {
             "type": "object",
             "properties": {
                 "id": {

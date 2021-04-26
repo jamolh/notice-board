@@ -8,7 +8,7 @@ definitions:
         example: error message
         type: string
     type: object
-  models.GetNoticeByIDRequestDto:
+  models.GetNoticeRequestDto:
     properties:
       id:
         example: 5dcca8d2-a5d6-11eb-bcbc-0242ac130002
@@ -66,7 +66,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/models.GetNoticeByIDRequestDto'
+            type: string
         "208":
           description: Already exists
           schema:
@@ -83,6 +83,7 @@ paths:
           description: Server internal error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      summary: Create new notice based on parametrs
   /v1/notices/:
     get:
       consumes:
@@ -120,6 +121,7 @@ paths:
           description: Server internal error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      summary: Method to take all notices
   /v1/notices/{id}:
     get:
       consumes:
@@ -141,7 +143,7 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/models.GetNoticeByIDRequestDto'
+            $ref: '#/definitions/models.GetNoticeRequestDto'
         "208":
           description: Already exists
           schema:
@@ -158,6 +160,7 @@ paths:
           description: Server internal error
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+      summary: Method for getting notice by ID
 schemes:
 - http
 swagger: "2.0"

@@ -18,7 +18,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param CreateNoticeRequest body models.Notice true "Create Notice"
-// @Success 200 {object} models.GetNoticeByIDRequestDto "Success"
+// @Success 200 {string} models.Response{payload=id} "Success"
 // @Failure 208 {object} models.ErrorResponse "Already exists"
 // @Failure 400 {object} models.ErrorResponse "Bad request"
 // @Failure 404 {object} models.ErrorResponse "Not found"
@@ -76,7 +76,7 @@ func CreateNoticeHandler(w http.ResponseWriter, r *http.Request, p httprouter.Pa
 // @Produce json
 // @Param id path string true "Notice ID"
 // @Param fields query string false "Get notice with all images"
-// @Success 200 {object} models.GetNoticeByIDRequestDto "Success"
+// @Success 200 {object} models.GetNoticeRequestDto "Success"
 // @Failure 208 {object} models.ErrorResponse "Already exists"
 // @Failure 400 {object} models.ErrorResponse "Bad request"
 // @Failure 404 {object} models.ErrorResponse "Not found"
