@@ -90,23 +90,26 @@ func TestMain(m *testing.M) {
 
 func TestCreateNotice(t *testing.T) {
 	err := db.CreateNotice(context.Background(), model)
-	log.Println(model)
 	assert.NoError(t, err)
 }
 
 func TestGetNoticeByID(t *testing.T) {
+	err := db.CreateNotice(context.Background(), model)
+	assert.NoError(t, err)
+
 	result, err := db.GetNoticeByID(context.Background(), &models.GetNoticeRequestDto{
 		ID:           model.ID,
 		GetAllImages: false,
 	})
 	assert.NoError(t, err)
+
 	assert.Equal(t, model.ID, result.ID, "got wrong id")
 	assert.Equal(t, model.Title, result.Title, "got wrong title")
 	assert.Equal(t, model.Description, result.Description, "got wrong description")
 	assert.Equal(t, model.Price, result.Price, "got wrong price")
 	assert.NotEmpty(t, result.CreatedAt, "got wrong created date")
 	assert.NotEmpty(t, result.Image, "no image")
-	assert.NotEqual(t, 1, len(result.Image), "expected 1 image, but got more")
+	assert.Equal(t, 1, len(result.Image), "expected 1 image, but got more")
 
 	result, err = db.GetNoticeByID(context.Background(), &models.GetNoticeRequestDto{
 		ID:           model.ID,
@@ -119,21 +122,37 @@ func TestGetNoticeByID(t *testing.T) {
 	assert.Equal(t, model.Price, result.Price, "got wrong price")
 	assert.NotEmpty(t, result.CreatedAt, "got wrong created date")
 	assert.NotEmpty(t, result.Image, "no image")
-	assert.NotEqual(t, 3, len(result.Image), "expected 3 image, but got less")
+	assert.Equal(t, 3, len(result.Image), "expected 3 image, but got less")
 }
 
 func TestGetNotices(t *testing.T) {
+	err := db.CreateNotice(context.Background(), model)
+	assert.NoError(t, err)
 
 	result, err := db.GetNotices(context.Background(), models.GetNoticesRequestDto{})
-	assert.NoError(t, err, "get notices failed"+err.Error())
+	assert.NoError(t, err, "get notices failed")
 	assert.NotEmpty(t, result, "got empty result")
-
-	for _, notice := range result {
-		assert.NotEmpty(t, notice.ID, "got wrong id")
-		assert.NotEmpty(t, notice.Title, "got wrong title")
-		assert.NotEmpty(t, notice.Description, "got wrong description")
-		assert.NotEmpty(t, notice.CreatedAt, "got wrong created date")
-		assert.NotEmpty(t, notice.Image, "no image")
-		assert.NotEqual(t, 1, len(notice.Image), "expected 1 image, but got more")
+	if len(result) > 0 {
+		for _, notice := range result {
+			assert.NotEmpty(t, notice.ID, "got wrong id")
+			assert.NotEmpty(t, notice.Title, "got wrong title")
+			assert.NotEmpty(t, notice.Description, "got wrong description")
+			assert.NotEmpty(t, notice.CreatedAt, "got wrong created date")
+			assert.NotEmpty(t, notice.Image, "no image")
+			assert.Equal(t, 1, len(notice.Image), "expected 1 image, but got more")
+		}
 	}
+}
+
+func TestCheckNoticeExistsByTitle(t *testing.T) {
+	err := db.CreateNotice(context.Background(), model)
+	assert.NoError(t, err)
+
+	exists, err := db.CheckNoticeExistsByTitle(context.Background(), model.Title)
+	assert.NoError(t, err)
+	assert.Equal(t, exists, true)
+
+	exists, err = db.CheckNoticeExistsByTitle(context.Background(), "test")
+	assert.NoError(t, err)
+	assert.Equal(t, exists, false)
 }
